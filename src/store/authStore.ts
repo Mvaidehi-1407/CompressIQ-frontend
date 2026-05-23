@@ -22,6 +22,8 @@ interface AuthState {
   fetchMe: () => Promise<void>
 }
 
+export const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -38,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (identifier, password) => {
         set({ isLoading: true })
-        const res = await api.post('/api/auth/login', { identifier, password })
+        const res = await api.post(`${API_URL}/api/auth/login`, { identifier, password })
         const { user, access_token, refresh_token } = res.data
         api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
         set({ user, accessToken: access_token, refreshToken: refresh_token, isAuthenticated: true, isLoading: false })
@@ -46,7 +48,7 @@ export const useAuthStore = create<AuthState>()(
 
       register: async (username, email, password) => {
         set({ isLoading: true })
-        const res = await api.post('/api/auth/register', { username, email, password })
+        const res = await api.post(`${API_URL}/api/auth/register`, { username, email, password })
         const { user, access_token, refresh_token } = res.data
         api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
         set({ user, accessToken: access_token, refreshToken: refresh_token, isAuthenticated: true, isLoading: false })
@@ -63,7 +65,7 @@ export const useAuthStore = create<AuthState>()(
           if (accessToken) {
             api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
           }
-          const res = await api.get('/api/auth/me')
+          const res = await api.get(`${API_URL}/api/auth/me`)
           set({ user: res.data.user, isAuthenticated: true })
         } catch {
           get().logout()

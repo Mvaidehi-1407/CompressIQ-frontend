@@ -15,6 +15,8 @@ const MODES = [
   { id:'smart_shrink', name:'Smart Shrink', desc:'Maximum reduction. Near-original quality.', color:'violet', border:'border-violet-500/30', bg:'rgba(139,92,246,0.08)', badge:'badge-violet' },
 ]
 
+export const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 export default function CompressionCenter() {
   const { files, fetchFiles, compressFile, downloadCompressed, downloadCompressedBulk } = useFileStore()
   const [selectedMode, setSelectedMode] = useState<'lossless'|'smart_shrink'>('smart_shrink')
@@ -34,7 +36,7 @@ export default function CompressionCenter() {
   const fetchRec = async (fileId: string) => {
     if (recommendations[fileId]) return
     try {
-      const r = await api.get(`/api/compress/recommend/${fileId}`)
+      const r = await api.get(`${API_URL}/api/compress/recommend/${fileId}`)
       setRecommendations(prev => ({ ...prev, [fileId]: r.data }))
     } catch {}
   }

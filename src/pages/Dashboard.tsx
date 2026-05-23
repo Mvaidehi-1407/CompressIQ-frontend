@@ -13,6 +13,8 @@ function fmt(bytes: number) {
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`
 }
 
+export const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [val, setVal] = useState(0)
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchFiles()
-    api.get('/api/analytics/overview').then(r => setStats(r.data)).catch(() => {})
+    api.get(`${API_URL}/api/analytics/overview`).then(r => setStats(r.data)).catch(() => {})
   }, [])
 
   const statCards = stats ? [

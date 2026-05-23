@@ -59,6 +59,8 @@ function saveBlob(data: Blob, filename: string) {
   URL.revokeObjectURL(url)
 }
 
+export const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 export const useFileStore = create<FileState>((set, get) => ({
   files: [],
   total: 0,
@@ -70,7 +72,7 @@ export const useFileStore = create<FileState>((set, get) => ({
   fetchFiles: async (params = {}) => {
     set({ loading: true })
     try {
-      const res = await api.get('/api/files/', { params })
+      const res = await api.get(`${API_URL}/api/files/`, { params })
       set({ files: res.data.files, total: res.data.total, loading: false })
     } catch {
       set({ loading: false })
@@ -81,7 +83,7 @@ export const useFileStore = create<FileState>((set, get) => ({
     set({ uploading: true })
     const form = new FormData()
     form.append('file', file)
-    const res = await api.post('/api/files/upload', form, {
+    const res = await api.post(`${API_URL}/api/files/upload`, form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     const newFile: FileRecord = res.data.file
@@ -90,13 +92,13 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   deleteFile: async (id: string) => {
-    await api.delete(`/api/files/${id}`)
+    await api.delete(`${API_URL}/api/files/${id}`)
     set((s) => ({ files: s.files.filter((f) => f.id !== id), total: s.total - 1 }))
   },
 
   compressFile: async (id: string, mode: string) => {
     set((s) => ({ compressing: [...s.compressing, id] }))
-    const res = await api.post(`/api/compress/${id}`, { mode })
+    const res = await api.post(`${API_URL}/api/compress/${id}`, { mode })
     const updated: FileRecord = res.data.file
     set((s) => ({
       files: s.files.map((f) => (f.id === id ? updated : f)),
@@ -107,7 +109,7 @@ export const useFileStore = create<FileState>((set, get) => ({
 
   protectFile: async (id: string) => {
     set((s) => ({ protecting: [...s.protecting, id] }))
-    const res = await api.post(`/api/protect/${id}`)
+    const res = await api.post(`${API_URL}/api/protect/${id}`)
     const updated: FileRecord = res.data.file
     set((s) => ({
       files: s.files.map((f) => (f.id === id ? updated : f)),
@@ -117,14 +119,14 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   unprotectFile: async (id: string) => {
-    const res = await api.delete(`/api/protect/${id}/unprotect`)
+    const res = await api.delete(`${API_URL}/api/protect/${id}/unprotect`)
     const updated: FileRecord = res.data.file
     set((s) => ({ files: s.files.map((f) => (f.id === id ? updated : f)) }))
     return updated
   },
 
   downloadFile: async (id: string, version = 'original', filename = 'download') => {
-    const res = await api.get(`/api/files/${id}/download`, {
+    const res = await api.get(`${API_URL}/api/files/${id}/download`, {
       params: { version },
       responseType: 'blob',
     })
@@ -132,29 +134,29 @@ export const useFileStore = create<FileState>((set, get) => ({
   },
 
   downloadCompressed: async (id: string, filename: string) => {
-    const res = await api.get(`/api/files/${id}/download/compressed`, { responseType: 'blob' })
+    const res = await api.get(`${API_URL}/api/files/${id}/download/compressed`, { responseType: 'blob' })
     saveBlob(res.data, filenameFromDisposition(res.headers['content-disposition']) ?? filename)
   },
 
   downloadRestored: async (id: string, filename: string, protectedFile = false) => {
-    const endpoint = protectedFile ? `/api/protect/${id}/restore` : `/api/files/${id}/download/restored`
+    const endpoint = protectedFile ? `${API_URL}/api/protect/${id}/restore` : `${API_URL}/api/files/${id}/download/restored`
     const res = await api.get(endpoint, { responseType: 'blob' })
     saveBlob(res.data, filenameFromDisposition(res.headers['content-disposition']) ?? `restored_${filename}`)
   },
 
   downloadCompressedBulk: async (ids = []) => {
-    const res = await api.post('/api/files/download/compressed/bulk', { file_ids: ids }, { responseType: 'blob' })
+    const res = await api.post(`${API_URL}/api/files/download/compressed/bulk`, { file_ids: ids }, { responseType: 'blob' })
     saveBlob(res.data, filenameFromDisposition(res.headers['content-disposition']) ?? 'compressed_files.zip')
   },
 
   downloadRestoredBulk: async (ids = [], protectedFiles = false) => {
-    const endpoint = protectedFiles ? '/api/protect/restore/bulk' : '/api/files/download/restored/bulk'
+    const endpoint = protectedFiles ? `${API_URL}/api/protect/restore/bulk` : `${API_URL}/api/files/download/restored/bulk`
     const res = await api.post(endpoint, { file_ids: ids }, { responseType: 'blob' })
     saveBlob(res.data, filenameFromDisposition(res.headers['content-disposition']) ?? 'restored_files.zip')
   },
 
   restoreProtected: async (id: string, filename: string) => {
-    const res = await api.get(`/api/protect/${id}/restore`, { responseType: 'blob' })
+    const res = await api.get(`${API_URL}/api/protect/${id}/restore`, { responseType: 'blob' })
     saveBlob(res.data, filenameFromDisposition(res.headers['content-disposition']) ?? `restored_${filename}`)
   },
 }))

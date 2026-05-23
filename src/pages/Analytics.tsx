@@ -7,6 +7,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts'
 import { TrendingDown, Files, ShieldCheck, Copy, Zap } from 'lucide-react'
+export const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
 function fmt(b: number) {
   if (!b) return '0 B'; const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k)); return `${(b/k**i).toFixed(1)} ${s[i]}`
@@ -36,10 +37,11 @@ export default function Analytics() {
   const [timeline, setTimeline] = useState<any[]>([])
   const { files, fetchFiles } = useFileStore()
 
+
   useEffect(() => {
     fetchFiles()
-    api.get('/api/analytics/overview').then(r => setStats(r.data)).catch(() => {})
-    api.get('/api/analytics/timeline').then(r => setTimeline(r.data.timeline ?? [])).catch(() => {})
+    api.get(`${API_URL}/api/analytics/overview`).then(r => setStats(r.data)).catch(() => {})
+    api.get(`${API_URL}/api/analytics/timeline`).then(r => setTimeline(r.data.timeline ?? [])).catch(() => {})
   }, [])
 
   const typeBreakdown = stats ? Object.entries(stats.type_breakdown ?? {}).map(([type, data]: any) => ({
