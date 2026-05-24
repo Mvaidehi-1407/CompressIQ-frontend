@@ -52,7 +52,7 @@ export default function Dashboard() {
 
   const quickActions = [
     { to: '/upload', icon: Upload, label: 'Upload Files', desc: 'Add new files to your vault', color: 'from-blue-500 to-cyan-500' },
-    { to: '/compress', icon: Zap, label: 'Compress Files', desc: 'Optimize with AI recommendations', color: 'from-violet-500 to-purple-600' },
+    { to: '/compress', icon: Zap, label: 'Compress Files', desc: 'Optimize with smart recommendations', color: 'from-violet-500 to-purple-600' },
     { to: '/restore', icon: ShieldCheck, label: 'Restore Files', desc: 'Recover protected originals', color: 'from-emerald-500 to-teal-500' },
     { to: '/analytics', icon: TrendingDown, label: 'View Analytics', desc: 'Storage savings insights', color: 'from-orange-500 to-amber-500' },
   ]

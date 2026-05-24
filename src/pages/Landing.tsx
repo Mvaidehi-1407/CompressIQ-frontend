@@ -8,7 +8,7 @@ const fadeUp = {
 }
 
 const features = [
-  { icon: Zap, title: 'AI Compression Engine', desc: 'Dual-mode compression — Lossless Vault for precision, Smart Shrink for maximum reduction. Real algorithms, real savings.', color: 'from-blue-500 to-cyan-500', glow: 'rgba(6,182,212,0.3)' },
+  { icon: Zap, title: 'Compression Engine', desc: 'Dual-mode compression — Lossless Vault for precision, Smart Shrink for maximum reduction. Real algorithms, real savings.', color: 'from-blue-500 to-cyan-500', glow: 'rgba(6,182,212,0.3)' },
   { icon: Copy, title: 'Duplicate Detection', desc: 'SHA-256 fingerprinting instantly detects duplicate files and quarantines them before wasting compression resources.', color: 'from-violet-500 to-purple-600', glow: 'rgba(139,92,246,0.3)' },
   { icon: ShieldCheck, title: 'AES-256-GCM Vault', desc: 'Military-grade file protection. Keys never leave the server. Restore-on-download with cryptographic integrity.', color: 'from-emerald-500 to-teal-500', glow: 'rgba(16,185,129,0.3)' },
   { icon: BarChart3, title: 'Live Analytics', desc: 'Real-time storage savings dashboards. Visualize compression ratios, duplicate reduction, and category breakdown.', color: 'from-orange-500 to-amber-500', glow: 'rgba(249,115,22,0.3)' },
@@ -27,7 +27,7 @@ const modes = [
 
 const steps = [
   { n: '01', title: 'Upload Files', desc: 'Drag & drop or browse. Multi-file uploads with real-time progress.', icon: Upload },
-  { n: '02', title: 'AI Analyzes', desc: 'Duplicate detection fires instantly. AI recommends optimal compression mode.', icon: Zap },
+  { n: '02', title: 'Analyzes', desc: 'Duplicate detection fires instantly. The system recommends optimal compression mode.', icon: Zap },
   { n: '03', title: 'Compress & Protect', desc: 'Real compression happens server-side. Protect sensitive files with AES-256.', icon: Lock },
   { n: '04', title: 'Save & Restore', desc: 'Download compressed files. Restore originals anytime.', icon: TrendingDown },
 ]
@@ -44,7 +44,7 @@ export default function Landing() {
             <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', boxShadow: '0 0 20px rgba(37,99,235,0.4)' }}>
               <svg width="18" height="18" viewBox="0 0 40 40" fill="none"><path d="M20 4L36 13V27L20 36L4 27V13L20 4Z" stroke="white" strokeWidth="2.5" strokeLinejoin="round" /><circle cx="20" cy="20" r="5" fill="white" /></svg>
             </div>
-            <span className="font-bold gradient-text">CompressIQ AI</span>
+            <span className="font-bold gradient-text">CompressIQ</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login" className="btn-secondary text-sm py-2 px-4">Sign In</Link>
@@ -64,7 +64,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <span className="badge-cyan mb-6 inline-flex text-xs font-bold uppercase tracking-widest">
-              <Zap size={10} /> AI-Powered Storage Intelligence · Hackathon 2026
+              <Zap size={10} /> Storage Intelligence · Hackathon 2026
             </span>
           </motion.div>
 
@@ -81,7 +81,7 @@ export default function Landing() {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
             className="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            CompressIQ AI automatically detects duplicates, compresses files with AI-guided precision, protects sensitive content, and visualizes your storage savings — all in one premium platform.
+            CompressIQ automatically detects duplicates, compresses files with guided precision, protects sensitive content, and visualizes your storage savings — all in one premium platform.
           </motion.p>
 
           <motion.div
@@ -145,7 +145,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <motion.div variants={fadeUp} custom={0} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-14">
             <h2 className="text-4xl font-black text-slate-100 mb-3">Two Modes. One Platform.</h2>
-            <p className="text-slate-400">Choose your compression philosophy — or let AI decide.</p>
+            <p className="text-slate-400">Choose your compression philosophy.</p>
           </motion.div>
           <div className="grid md:grid-cols-2 gap-8">
             {modes.map((m, i) => (
@@ -217,9 +217,9 @@ export default function Landing() {
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)' }}>
               <svg width="14" height="14" viewBox="0 0 40 40" fill="none"><path d="M20 4L36 13V27L20 36L4 27V13L20 4Z" stroke="white" strokeWidth="3" strokeLinejoin="round" /></svg>
             </div>
-            <span className="font-bold text-sm gradient-text">CompressIQ AI</span>
+            <span className="font-bold text-sm gradient-text">CompressIQ</span>
           </div>
-          <p className="text-slate-600 text-xs">© 2026 CompressIQ AI · Hackathon 2026 · AI / Systems Engineering</p>
+          <p className="text-slate-600 text-xs">© 2026 CompressIQ · Hackathon 2026 · Systems Engineering</p>
         </div>
       </footer>
     </div>

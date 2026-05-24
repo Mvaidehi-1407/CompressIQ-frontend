@@ -45,7 +45,7 @@ export default function SplashScreen() {
           transition={{ delay: 0.4 }}
           className="text-center"
         >
-          <h1 className="text-3xl font-bold gradient-text">CompressIQ AI</h1>
+          <h1 className="text-3xl font-bold gradient-text">CompressIQ</h1>
           <p className="text-slate-400 text-sm mt-1">Intelligent Storage Optimization</p>
         </motion.div>
 

@@ -89,7 +89,7 @@ export default function Profile() {
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => choosePhoto(e.target.files?.[0])}/>
             </div>
             <div className="mt-5 grid w-full grid-cols-4 gap-2">
-              {['SI','AI','CP','UX'].map(icon => (
+              {['SI','ST','CP','UX'].map(icon => (
                 <button key={icon} onClick={() => setProfile(prev => ({ ...prev, icon, photo: '' }))}
                   className={`rounded-xl border px-2 py-2 text-xs font-bold transition-colors ${profile.icon === icon && !profile.photo ? 'border-blue-400 bg-blue-500/15 text-blue-200' : 'border-white/10 bg-white/[0.03] text-slate-400 hover:text-slate-200'}`}>
                   {icon}

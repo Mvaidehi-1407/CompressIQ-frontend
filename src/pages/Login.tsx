@@ -42,7 +42,7 @@ export default function Login() {
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', boxShadow: '0 0 24px rgba(37,99,235,0.5)' }}>
               <Zap size={20} className="text-white" />
             </div>
-            <span className="font-bold text-lg gradient-text">CompressIQ AI</span>
+            <span className="font-bold text-lg gradient-text">CompressIQ</span>
           </Link>
           <h1 className="text-2xl font-bold text-slate-100">Welcome back</h1>
           <p className="text-slate-400 text-sm mt-1">Sign in to your storage dashboard</p>

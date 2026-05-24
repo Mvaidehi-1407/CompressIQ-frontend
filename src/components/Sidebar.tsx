@@ -39,7 +39,7 @@ export default function Sidebar() {
           </div>
           <div>
             <span className="font-bold text-sm gradient-text">CompressIQ</span>
-            <span className="block text-[10px] text-slate-500 font-medium">AI Platform</span>
+            <span className="block text-[10px] text-slate-500 font-medium">Storage Platform</span>
           </div>
         </div>
       </div>
