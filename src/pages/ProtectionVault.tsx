@@ -25,10 +25,12 @@ export default function ProtectionVault() {
 
   useEffect(() => { fetchFiles() }, [])
 
-  const protectedFiles = files.filter(f => !f.is_duplicate && f.is_protected)
-  const eligible = protectedFiles
+  const restorableFiles = files.filter(f => !f.is_duplicate && (f.is_protected || f.is_compressed))
+  const protectedFiles = restorableFiles.filter(f => f.is_protected)
   const compressedFiles = files.filter(f => !f.is_duplicate && f.is_compressed)
+  const selectedRestorable = restorableFiles.filter(f => selected.has(f.id))
   const selectedIds = Array.from(selected)
+  const [restoreScope, setRestoreScope] = useState<'selected' | 'all' | 'protected' | 'compressed'>('selected')
 
   const unprotect = async (id: string) => {
     setActing(prev => new Set([...prev, id]))
@@ -64,10 +66,33 @@ export default function ProtectionVault() {
     setActing(prev => { const s=new Set(prev); s.delete(id); return s })
   }
 
-  const restoredBulk = async (ids: string[], protectedOnly = true) => {
-    const batchId = protectedOnly ? 'protected-bulk' : 'restored-bulk'
+  const restoreBulkGroups = async (targetFiles: typeof restorableFiles) => {
+    const protectedIds = targetFiles.filter(f => f.is_protected).map(f => f.id)
+    const compressedIds = targetFiles.filter(f => !f.is_protected && f.is_compressed).map(f => f.id)
+
+    if (protectedIds.length > 0) await downloadRestoredBulk(protectedIds, true)
+    if (compressedIds.length > 0) await downloadRestoredBulk(compressedIds, false)
+  }
+
+  const filesForScope = () => {
+    if (restoreScope === 'all') return restorableFiles
+    if (restoreScope === 'protected') return protectedFiles
+    if (restoreScope === 'compressed') return compressedFiles
+    return selectedRestorable
+  }
+
+  const restoreScopeLabel = () => {
+    if (restoreScope === 'all') return `All Restorable (${restorableFiles.length})`
+    if (restoreScope === 'protected') return `Protected Files (${protectedFiles.length})`
+    if (restoreScope === 'compressed') return `Compressed Files (${compressedFiles.length})`
+    return `Selected Files (${selectedRestorable.length})`
+  }
+
+  const restoredBulk = async () => {
+    const batchId = 'restored-bulk'
+    const targetFiles = filesForScope()
     setActing(prev => new Set([...prev, batchId]))
-    try { await downloadRestoredBulk(ids, protectedOnly) } catch {}
+    try { await restoreBulkGroups(targetFiles) } catch {}
     setActing(prev => { const s=new Set(prev); s.delete(batchId); return s })
   }
 
@@ -110,22 +135,32 @@ export default function ProtectionVault() {
       <div className="card p-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="section-header mb-1">Restore Original Files</h2>
-          <p className="text-xs text-slate-500">Select the restorable files you want and download reconstructed originals.</p>
+          <p className="text-xs text-slate-500">Select protected or compressed files and download reconstructed originals.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button onClick={() => setSelected(new Set(protectedFiles.map(f => f.id)))} disabled={protectedFiles.length === 0} className="btn-secondary text-xs py-2 px-3">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <label className="relative inline-flex min-w-[210px]">
+            <span className="sr-only">Restore file selection</span>
+            <select
+              value={restoreScope}
+              onChange={(e) => setRestoreScope(e.target.value as typeof restoreScope)}
+              className="h-9 w-full rounded-xl border border-cyan-500/30 bg-white/5 px-3 pr-8 text-xs font-semibold text-cyan-100 outline-none transition-colors hover:bg-cyan-500/10 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20"
+            >
+              <option className="bg-slate-950 text-slate-100" value="selected">Selected Files ({selectedRestorable.length})</option>
+              <option className="bg-slate-950 text-slate-100" value="all">All Restorable ({restorableFiles.length})</option>
+              <option className="bg-slate-950 text-slate-100" value="protected">Protected Files ({protectedFiles.length})</option>
+              <option className="bg-slate-950 text-slate-100" value="compressed">Compressed Files ({compressedFiles.length})</option>
+            </select>
+          </label>
+          <button onClick={() => setSelected(new Set(restorableFiles.map(f => f.id)))} disabled={restorableFiles.length === 0} className="btn-secondary h-9 text-xs py-2 px-3">
             Select All Restorable
           </button>
-          <button onClick={() => setSelected(new Set())} disabled={selectedIds.length === 0} className="btn-secondary text-xs py-2 px-3">
+          <button onClick={() => setSelected(new Set())} disabled={selectedIds.length === 0} className="btn-secondary h-9 text-xs py-2 px-3">
             Clear Selection
           </button>
-          <button onClick={() => restoredBulk(selectedIds, true)} disabled={selectedIds.length === 0 || acting.has('protected-bulk')} className="btn-cyan text-xs py-2 px-3">
-            <Download size={13}/> Download Selected Restored Files
+          <button onClick={restoredBulk} disabled={filesForScope().length === 0 || acting.has('restored-bulk')} className="btn-cyan h-9 text-xs py-2 px-3">
+            <Download size={13}/> Restore {restoreScopeLabel()}
           </button>
-          <button onClick={() => restoredBulk([], true)} disabled={protectedFiles.length === 0 || acting.has('protected-bulk')} className="btn-secondary text-xs py-2 px-3">
-            <Download size={13}/> Download All Restored Files
-          </button>
-          <button onClick={() => compressedBulk(selectedIds.length ? selectedIds : compressedFiles.map(f => f.id))} disabled={compressedFiles.length === 0 || acting.has('compressed-bulk')} className="btn-secondary text-xs py-2 px-3">
+          <button onClick={() => compressedBulk(selectedIds.length ? selectedIds : compressedFiles.map(f => f.id))} disabled={compressedFiles.length === 0 || acting.has('compressed-bulk')} className="btn-secondary h-9 text-xs py-2 px-3">
             <Archive size={13}/> Download Compressed Versions
           </button>
         </div>
@@ -133,13 +168,13 @@ export default function ProtectionVault() {
 
       <div className="space-y-3">
         <AnimatePresence>
-          {eligible.length === 0 && (
+          {restorableFiles.length === 0 && (
             <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} className="card flex flex-col items-center py-16 text-center">
               <ShieldCheck size={40} className="text-slate-700 mb-3"/>
               <p className="text-slate-500 font-medium">No restorable files to display</p>
             </motion.div>
           )}
-          {eligible.map((f, i) => {
+          {restorableFiles.map((f, i) => {
             const Icon = typeIcon[f.file_type] ?? FileText
             const isActing = acting.has(f.id)
             return (
@@ -149,11 +184,9 @@ export default function ProtectionVault() {
               >
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    {f.is_protected && (
-                      <button onClick={() => toggle(f.id)} className={`absolute -left-2 -top-2 w-5 h-5 rounded-md border flex items-center justify-center z-10 ${selected.has(f.id) ? 'bg-emerald-500 border-emerald-400' : 'bg-slate-900 border-slate-600'}`} title="Select for restored download">
-                        {selected.has(f.id) && <CheckCircle size={12} className="text-white"/>}
-                      </button>
-                    )}
+                    <button onClick={() => toggle(f.id)} className={`absolute -left-2 -top-2 w-5 h-5 rounded-md border flex items-center justify-center z-10 ${selected.has(f.id) ? 'bg-emerald-500 border-emerald-400' : 'bg-slate-900 border-slate-600'}`} title="Select for restored download">
+                      {selected.has(f.id) && <CheckCircle size={12} className="text-white"/>}
+                    </button>
                     <div className="w-10 h-10 rounded-xl glass flex items-center justify-center flex-shrink-0">
                       <Icon size={17} className={typeColor[f.file_type]??'text-blue-400'}/>
                     </div>
@@ -167,7 +200,7 @@ export default function ProtectionVault() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium text-slate-200 truncate text-sm">{f.original_filename}</span>
                       {f.is_protected && <span className="badge-green text-[10px]">Already Protected</span>}
-                      {!f.is_protected && <span className="badge-violet text-[10px]">Protected Automatically During Compression</span>}
+                      {!f.is_protected && f.is_compressed && <span className="badge-cyan text-[10px]">Compressed Restorable</span>}
                     </div>
                     <div className="text-xs text-slate-500 mt-0.5">
                       {fmt(f.original_size)} - {f.file_type}
